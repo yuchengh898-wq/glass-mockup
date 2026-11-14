@@ -1,0 +1,81 @@
+<!-- ============================================================
+     pages/index/index.wxml
+     关键点：
+       1. style="{{themeStyle}}" 注入整套 CSS 变量，换校即换肤
+       2. 玻璃卡不能放在带 filter / opacity / transform 的父容器里，
+          否则 backdrop-filter 失去采样源，模糊直接失效
+     ============================================================ -->
+<view class="page" style="{{themeStyle}}">
+
+  <!-- ① 极光背景 -->
+  <view class="aurora-bg"></view>
+
+  <!-- ② 内容 -->
+  <view class="body">
+
+    <!-- 学校身份卡：点一下进"选择院校" -->
+    <view class="school glass" bindtap="onPickSchool" hover-class="is-tap" hover-stay-time="80">
+      <view class="logo">
+        <image wx:if="{{school.emblem}}" class="logo-img" src="{{school.emblem}}" mode="aspectFit" />
+        <text wx:else class="logo-mark">{{school.mark}}</text>
+      </view>
+      <view class="meta">
+        <text class="name">{{school.name}}</text>
+        <text class="motto">{{school.motto}}</text>
+      </view>
+      <view class="streak">
+        <text class="streak-num">{{streak}}</text>
+        <text class="streak-unit">天连签</text>
+      </view>
+    </view>
+
+    <!-- 每日一题：全页唯一视觉焦点 -->
+    <view class="hero-wrap">
+      <view class="hero-glow"></view>
+      <view class="hero glass glass--ring" bindtap="onDaily" hover-class="is-tap" hover-stay-time="80">
+        <view class="hero-top">
+          <view class="tag">✦ 今日挑战</view>
+          <text class="hero-remain">题库剩余 {{totalCount}}</text>
+        </view>
+        <text class="hero-title">每日一题</text>
+        <text class="hero-sub">自由选科 · 随机出题</text>
+        <view class="hero-bottom">
+          <view class="cta">
+            <text>开始答题</text>
+            <view class="cta-arrow"></view>
+          </view>
+          <text class="hero-hint">今日仅剩 {{remainTimes}} 次</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 学科 -->
+    <view class="sect">
+      <text class="sect-title">全部学科</text>
+      <text class="sect-extra">{{subjects.length}} 个科目</text>
+    </view>
+
+    <view class="grid">
+      <view
+        class="tile glass"
+        wx:for="{{subjects}}"
+        wx:key="key"
+        data-key="{{item.key}}"
+        bindtap="onSubject"
+        hover-class="is-tap"
+        hover-stay-time="80"
+      >
+        <!-- --chip-N 由主题引擎按校徽色生成，N = index + 1 -->
+        <view class="chip" style="background: var(--chip-{{index + 1}})">
+          <image wx:if="{{item.icon}}" class="chip-ico" src="{{item.icon}}" mode="aspectFit" />
+          <text wx:else class="chip-emoji">{{item.emoji}}</text>
+        </view>
+        <view class="tile-foot">
+          <text class="tile-name">{{item.name}}</text>
+          <text class="tile-cnt">{{item.count}} 题</text>
+        </view>
+      </view>
+    </view>
+
+  </view>
+</view>

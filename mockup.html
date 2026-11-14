@@ -1,0 +1,303 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>题霸灌顶 · 极光玻璃</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased;}
+  html,body{background:#05030C;overflow:hidden;}
+  body{display:flex;align-items:center;justify-content:center;width:375px;height:812px;}
+
+  .phone{
+    position:relative;width:375px;height:812px;overflow:hidden;color:#fff;
+    background:
+      radial-gradient(120% 62% at 46% -6%, #3D1779 0%, #240D48 34%, #150929 62%, #0A0518 84%, #05030C 100%);
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;
+  }
+
+  /* ============ 1. 极光背景层 ============ */
+  .aurora{position:absolute;inset:0;overflow:hidden;}
+  .blob{position:absolute;border-radius:50%;filter:blur(52px);}
+  .b1{width:250px;height:250px;left:-70px;top:-70px;background:#8B5CF6;opacity:.55;}
+  .b2{width:260px;height:260px;right:-90px;top:60px;background:#E879F9;opacity:.45;}
+  .b3{width:230px;height:230px;left:-80px;top:330px;background:#6366F1;opacity:.55;}
+  .b4{width:250px;height:250px;right:-90px;top:430px;background:#C026D3;opacity:.44;}
+  .b5{width:280px;height:280px;left:-60px;bottom:-70px;background:#0891B2;opacity:.52;}
+  .b6{width:240px;height:240px;right:-70px;bottom:-40px;background:#7C3AED;opacity:.50;}
+
+  /* 斜向光束：一条极淡的光扫过全局 */
+  .beam{position:absolute;inset:-20%;pointer-events:none;
+    background:linear-gradient(112deg, transparent 26%, rgba(255,255,255,.055) 42%,
+      rgba(255,255,255,.02) 48%, transparent 58%);
+    filter:blur(6px);}
+
+  /* 颗粒噪点：廉价但要命的质感提升 */
+  .noise{
+    position:absolute;inset:0;opacity:.045;mix-blend-mode:overlay;pointer-events:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .scrim{position:absolute;left:0;right:0;top:0;height:120px;z-index:3;pointer-events:none;
+    background:linear-gradient(180deg, rgba(5,3,12,.28), transparent);}
+  .content{position:relative;height:100%;z-index:2;display:flex;flex-direction:column;}
+
+  /* ============ 状态栏 / 导航 ============ */
+  .statusbar{height:44px;padding:12px 22px 0;display:flex;justify-content:space-between;
+    font-size:14px;font-weight:600;letter-spacing:.2px;opacity:.92;}
+  .statusbar .right{display:flex;gap:5px;align-items:center;font-size:11px;}
+  .bars{display:flex;gap:2px;align-items:flex-end;}
+  .bars i{width:3px;background:#fff;border-radius:1px;display:block;}
+  .bars i:nth-child(1){height:4px}.bars i:nth-child(2){height:6px}
+  .bars i:nth-child(3){height:8px}.bars i:nth-child(4){height:10px}
+  .batt{width:22px;height:11px;border:1px solid rgba(255,255,255,.7);border-radius:3px;
+    position:relative;margin-left:4px;}
+  .batt::after{content:'';position:absolute;left:1.5px;top:1.5px;bottom:1.5px;width:70%;
+    background:#fff;border-radius:1.5px;}
+
+  .nav{height:44px;display:flex;align-items:center;padding:0 16px;}
+  .nav h1{font-size:17px;font-weight:600;letter-spacing:.5px;}
+  .nav .dot{width:5px;height:5px;border-radius:50%;background:#C4B5FD;margin-left:7px;
+    box-shadow:0 0 8px 2px rgba(196,181,253,.8);}
+  .capsule{margin-left:auto;width:87px;height:32px;border-radius:16px;
+    border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.10);
+    display:flex;align-items:center;justify-content:space-around;
+    -webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);}
+  .capsule .d3{display:flex;gap:3px;}
+  .capsule .d3 i{width:3.5px;height:3.5px;border-radius:50%;background:rgba(255,255,255,.85);display:block;}
+  .capsule .sep{width:1px;height:16px;background:rgba(255,255,255,.20);}
+  .capsule .ring{width:15px;height:15px;border-radius:50%;border:1.8px solid rgba(255,255,255,.9);
+    position:relative;}
+  .capsule .ring::after{content:'';position:absolute;inset:3px;border-radius:50%;border:1.5px solid rgba(255,255,255,.55);}
+
+  /* ============ 通用玻璃 ============ */
+  .glass{
+    position:relative;border-radius:22px;overflow:hidden;
+    background:linear-gradient(145deg, rgba(255,255,255,.15), rgba(255,255,255,.065) 52%, rgba(255,255,255,.035));
+    -webkit-backdrop-filter:blur(26px) saturate(185%);
+    backdrop-filter:blur(26px) saturate(185%);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.20),
+      inset 0 -1px 0 rgba(255,255,255,.05),
+      0 18px 38px -18px rgba(6,2,18,.85);
+  }
+  /* 渐细高光描边 —— 高级感的关键 */
+  .glass::before{
+    content:'';position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;
+    background:linear-gradient(150deg,
+      rgba(255,255,255,.55) 0%,
+      rgba(255,255,255,.10) 32%,
+      rgba(255,255,255,.02) 55%,
+      rgba(255,255,255,.06) 78%,
+      rgba(255,255,255,.38) 100%);
+    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor;mask-composite:exclude;
+  }
+
+  /* ============ 学校卡 ============ */
+  .school{margin:2px 16px 0;height:62px;border-radius:18px;display:flex;align-items:center;
+    padding:0 14px;gap:11px;}
+  .logo{width:38px;height:38px;border-radius:50%;position:relative;flex:none;
+    background:radial-gradient(circle at 32% 26%, #C4B5FD, #7C3AED 46%, #4C1D95 100%);
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 0 0 1px rgba(255,255,255,.30) inset, 0 0 16px 2px rgba(139,92,246,.55);}
+  .logo span{font-size:11px;font-weight:700;letter-spacing:.5px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.4);}
+  .school .meta{display:flex;flex-direction:column;gap:3px;min-width:0;}
+  .school .name{font-size:15px;font-weight:600;letter-spacing:1.2px;}
+  .school .motto{font-size:10.5px;letter-spacing:1.6px;color:rgba(255,255,255,.52);}
+  .streak{margin-left:auto;display:flex;align-items:baseline;gap:3px;padding:6px 10px;border-radius:11px;
+    background:linear-gradient(135deg, rgba(253,224,71,.22), rgba(251,146,60,.14));
+    border:1px solid rgba(253,224,71,.28);}
+  .streak b{font-size:14px;font-weight:700;color:#FDE68A;font-variant-numeric:tabular-nums;}
+  .streak s{font-size:9.5px;color:rgba(253,230,138,.70);text-decoration:none;}
+
+  /* ============ 每日一题 主卡 ============ */
+  .hero-wrap{position:relative;margin:14px 16px 0;}
+  .hero-glow{position:absolute;left:8%;right:8%;top:12px;bottom:-14px;border-radius:40px;
+    background:radial-gradient(60% 60% at 50% 50%, rgba(168,85,247,.75), rgba(217,70,239,.22) 55%, transparent 78%);
+    filter:blur(30px);z-index:0;}
+  .hero{position:relative;z-index:1;height:162px;border-radius:26px;padding:17px 18px;
+    display:flex;flex-direction:column;
+    background:linear-gradient(140deg, rgba(168,85,247,.20), rgba(255,255,255,.06) 46%, rgba(56,189,248,.10));
+    -webkit-backdrop-filter:blur(24px) saturate(185%);
+    backdrop-filter:blur(24px) saturate(185%);}
+  .hero::before{
+    background:linear-gradient(150deg,
+      rgba(233,213,255,.72) 0%, rgba(255,255,255,.13) 30%,
+      rgba(255,255,255,.02) 55%, rgba(196,181,253,.16) 82%, rgba(255,255,255,.48) 100%);
+  }
+  .hero .top{display:flex;align-items:center;gap:6px;}
+  .tag{font-size:10px;font-weight:600;letter-spacing:1px;padding:4px 9px;border-radius:8px;
+    color:#E9D5FF;background:rgba(196,181,253,.16);border:1px solid rgba(196,181,253,.28);
+    display:flex;align-items:center;gap:4px;}
+  .hero .remain{margin-left:auto;font-size:10.5px;color:rgba(255,255,255,.45);letter-spacing:.4px;}
+  .hero h2{font-size:26px;font-weight:700;letter-spacing:2px;margin-top:11px;
+    background:linear-gradient(180deg,#fff,rgba(233,213,255,.78));
+    -webkit-background-clip:text;background-clip:text;color:transparent;}
+  .hero p{font-size:11.5px;color:rgba(255,255,255,.52);letter-spacing:1.1px;margin-top:5px;}
+  .hero .bottom{margin-top:auto;display:flex;align-items:center;}
+  .cta{height:38px;padding:0 20px;border-radius:19px;display:flex;align-items:center;gap:8px;
+    font-size:13.5px;font-weight:600;letter-spacing:.6px;color:#2A0B4D;
+    background:linear-gradient(135deg,#FFFFFF,#E9D5FF 60%,#D8B4FE);
+    box-shadow:0 6px 18px -4px rgba(196,181,253,.65), inset 0 1px 0 #fff;}
+  .cta svg{width:14px;height:14px;}
+  .hint{margin-left:auto;font-size:10px;color:rgba(255,255,255,.34);letter-spacing:.6px;}
+
+  /* ============ 学科网格 ============ */
+  .sect{margin:19px 18px 0;display:flex;align-items:baseline;justify-content:space-between;}
+  .sect h3{font-size:13.5px;font-weight:600;letter-spacing:1.4px;}
+  .sect span{font-size:10.5px;color:rgba(255,255,255,.34);letter-spacing:.6px;}
+
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px 16px 0;}
+  .tile{height:86px;border-radius:18px;padding:11px 12px;display:flex;flex-direction:column;
+    justify-content:space-between;}
+  .tile .chip{width:28px;height:28px;border-radius:9px;display:flex;align-items:center;justify-content:center;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.22);}
+  .tile .chip svg{width:16px;height:16px;}
+  .tile .name{font-size:13px;font-weight:600;letter-spacing:1.6px;}
+  .tile .cnt{font-size:9.5px;color:rgba(255,255,255,.45);letter-spacing:.5px;margin-top:2px;
+    font-variant-numeric:tabular-nums;}
+  .tile .row{display:flex;align-items:flex-end;justify-content:space-between;}
+
+  /* 每个学科只给图标一点点色，保持整体克制 */
+  .c-math   .chip{background:linear-gradient(140deg,rgba(139,92,246,.42),rgba(139,92,246,.14));color:#C4B5FD}
+  .c-phy    .chip{background:linear-gradient(140deg,rgba(56,189,248,.42),rgba(56,189,248,.14));color:#7DD3FC}
+  .c-chem   .chip{background:linear-gradient(140deg,rgba(52,211,153,.40),rgba(52,211,153,.13));color:#6EE7B7}
+  .c-bio    .chip{background:linear-gradient(140deg,rgba(251,113,133,.40),rgba(251,113,133,.13));color:#FDA4AF}
+  .c-eng    .chip{background:linear-gradient(140deg,rgba(251,191,36,.40),rgba(251,191,36,.13));color:#FCD34D}
+  .c-hist   .chip{background:linear-gradient(140deg,rgba(251,146,60,.40),rgba(251,146,60,.13));color:#FDBA74}
+  .c-poli   .chip{background:linear-gradient(140deg,rgba(244,114,182,.40),rgba(244,114,182,.13));color:#F9A8D4}
+  .c-geo    .chip{background:linear-gradient(140deg,rgba(96,165,250,.40),rgba(96,165,250,.13));color:#93C5FD}
+
+  .homebar{position:absolute;bottom:9px;left:50%;transform:translateX(-50%);
+    width:134px;height:5px;border-radius:3px;background:rgba(255,255,255,.75);z-index:5;}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="aurora">
+    <div class="blob b1"></div><div class="blob b2"></div>
+    <div class="blob b3"></div><div class="blob b4"></div>
+    <div class="blob b5"></div><div class="blob b6"></div>
+  </div>
+  <div class="beam"></div>
+  <div class="noise"></div>
+  <div class="scrim"></div>
+
+  <div class="content">
+    <div class="statusbar">
+      <div>9:41</div>
+      <div class="right">
+        <div class="bars"><i></i><i></i><i></i><i></i></div>
+        <div class="batt"></div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <h1>题霸灌顶</h1>
+      <div class="capsule">
+        <div class="d3"><i></i><i></i><i></i></div>
+        <div class="sep"></div>
+        <div class="ring"></div>
+      </div>
+    </div>
+
+    <!-- 学校身份卡 -->
+    <div class="school glass">
+      <div class="logo"><span>清</span></div>
+      <div class="meta">
+        <div class="name">清华大学</div>
+        <div class="motto">自强不息 · 厚德载物</div>
+      </div>
+      <div class="streak"><b>12</b><s>天连签</s></div>
+    </div>
+
+    <!-- 每日一题 -->
+    <div class="hero-wrap">
+      <div class="hero-glow"></div>
+      <div class="hero glass">
+        <div class="top">
+          <div class="tag">✦ 今日挑战</div>
+          <div class="remain">题库剩余 1,284</div>
+        </div>
+        <h2>每日一题</h2>
+        <p>自由选科 · 随机出题</p>
+        <div class="bottom">
+          <div class="cta">
+            开始答题
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+                 stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+          </div>
+          <div class="hint">今日仅剩 1 次</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 学科 -->
+    <div class="sect"><h3>全部学科</h3><span>8 个科目</span></div>
+
+    <div class="grid">
+      <div class="tile glass c-math">
+        <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round"><path d="M5 8h14M9.5 8v11M15 8c-1.6 4.4-3 7.3-4.6 10"/></svg></div>
+        <div class="row"><div><div class="name">数学</div><div class="cnt">1,284 题</div></div></div>
+      </div>
+
+      <div class="tile glass c-phy">
+        <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+             <circle cx="12" cy="12" r="2.1"/>
+             <ellipse cx="12" cy="12" rx="9" ry="4.2"/>
+             <ellipse cx="12" cy="12" rx="9" ry="4.2" transform="rotate(60 12 12)"/>
+             <ellipse cx="12" cy="12" rx="9" ry="4.2" transform="rotate(-60 12 12)"/></svg></div>
+        <div class="row"><div><div class="name">物理</div><div class="cnt">968 题</div></div></div>
+      </div>
+
+      <div class="tile glass c-chem">
+        <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round">
+             <path d="M9 3h6M10 3v6.2L5.2 17a2.2 2.2 0 0 0 1.9 3.3h9.8a2.2 2.2 0 0 0 1.9-3.3L14 9.2V3"/>
+             <path d="M7.4 14h9.2"/></svg></div>
+        <div class="row"><div><div class="name">化学</div><div class="cnt">742 题</div></div></div>
+      </div>
+
+      <div class="tile glass c-bio">
+        <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+             stroke-linecap="round" stroke-linejoin="round">
+             <path d="M20 4c0 9-5.4 14-11.5 14H4.5C4.5 9 9.9 4 20 4z"/>
+             <path d="M4 21c1.4-5.6 4.2-9.2 8.5-11.4"/></svg></div>
+        <div class="row"><div><div class="name">生物</div><div class="cnt">655 题</div></div></div>
+      </div>
+
+      <div class="tile glass c-eng">
+        <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+             stroke-linecap="round" stroke-linejoin="round"><path d="M4 19L11 5l7 14"/><path d="M6.8 14.2h8.4"/></svg></div>
+        <div class="row"><div><div class="name">英语</div><div class="cnt">1,506 题</div></div></div>
+      </div>
+
+      <div class="tile glass c-hist">
+        <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+             stroke-linecap="round"><path d="M7 3h10a2 2 0 0 1 2 2v16l-7-3.4L5 21V5a2 2 0 0 1 2-2z"/>
+             <path d="M9 8h6M9 11.6h4"/></svg></div>
+        <div class="row"><div><div class="name">历史</div><div class="cnt">831 题</div></div></div>
+      </div>
+
+      <div class="tile glass c-poli">
+        <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+             stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16M7 20h10"/>
+             <path d="M12 6.5L5 9M12 6.5L19 9"/>
+             <path d="M5 9l-2.4 5h4.8zM19 9l-2.4 5h4.8z"/></svg></div>
+        <div class="row"><div><div class="name">政治</div><div class="cnt">612 题</div></div></div>
+      </div>
+
+      <div class="tile glass c-geo">
+        <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+             <circle cx="12" cy="12" r="8.6"/><ellipse cx="12" cy="12" rx="4" ry="8.6"/>
+             <path d="M3.4 12h17.2M5.2 7.6h13.6M5.2 16.4h13.6"/></svg></div>
+        <div class="row"><div><div class="name">地理</div><div class="cnt">588 题</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="homebar"></div>
+</div>
+</body>
+</html>

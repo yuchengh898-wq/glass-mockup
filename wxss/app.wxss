@@ -1,0 +1,123 @@
+/* ==========================================================================
+   app.wxss —— 全局样式
+   策略：所有颜色都走 CSS 变量，变量的值由 theme/palette.js 按校徽色算出来，
+        在页面根节点用 style="{{themeStyle}}" 注入。
+        WXSS 里**不写任何硬编码的品牌色**，否则换校就会残留。
+   ========================================================================== */
+
+view, text, image, scroll-view {
+  box-sizing: border-box;
+}
+
+page {
+  /* 兜底的默认主题（没注入变量时的紫色），保证首屏不白屏 */
+  --brand:       rgba(124, 58, 237, 1);
+  --brand-lt:    rgba(196, 181, 253, 1);
+  --brand-soft:  rgba(233, 213, 255, 1);
+  --brand-deep:  rgba(76, 29, 149, 1);
+  --bg-page:     #07020F;
+  --bg-wash:     radial-gradient(120% 62% at 46% -6%, #3D177A 0%, #23113F 34%, #100A22 62%, #07020F 100%);
+  --aurora:      none;
+
+  /* 文字层级：永远不要用纯白和纯黑 */
+  --ink:    rgba(255, 255, 255, 0.96);
+  --ink-2:  rgba(255, 255, 255, 0.72);
+  --ink-3:  rgba(255, 255, 255, 0.45);
+  --ink-4:  rgba(255, 255, 255, 0.30);
+
+  /* 圆角只留 3 档 */
+  --r-sm: 20rpx;
+  --r-md: 36rpx;
+  --r-lg: 52rpx;
+
+  --glass-fill: linear-gradient(145deg,
+                  rgba(255, 255, 255, 0.15) 0%,
+                  rgba(255, 255, 255, 0.065) 52%,
+                  rgba(255, 255, 255, 0.035) 100%);
+  --glass-line: rgba(255, 255, 255, 0.16);
+  --glass-blur: blur(26px) saturate(185%);
+  --shadow-lg:  0 36rpx 76rpx -36rpx rgba(4, 2, 12, 0.9);
+
+  background: var(--bg-page);
+  color: var(--ink);
+  font-family: -apple-system, "PingFang SC", "Helvetica Neue", "Microsoft YaHei", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============================================================
+   极光背景层 —— 整个"高级感"的地基
+   用 6 团 radial-gradient 拼成，不用 filter:blur（性能便宜 10 倍）
+   ============================================================ */
+.aurora-bg {
+  position: fixed;
+  top: 0; right: 0; bottom: 0; left: 0;
+  z-index: 0;
+  background-color: var(--bg-page);
+  /* ⚠️ 顺序不能反：background-image 里**先列出的图层在最上层**。
+     --aurora 是 6 团半透明光晕，必须在上面；
+     --bg-wash 是不透明的深色底，必须压在最下面。
+     写反了，深色底会把极光整层盖死，页面只剩一片黑紫。 */
+  background-image: var(--aurora), var(--bg-wash);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+/* 颗粒噪点：成本几乎为零，但能把"廉价渐变感"直接洗掉 */
+.aurora-bg::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 280rpx 280rpx;
+}
+
+/* ============================================================
+   核心玻璃卡 —— 全站唯一入口
+   ============================================================ */
+.glass {
+  position: relative;
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  background: var(--glass-fill);
+  border: 1rpx solid var(--glass-line);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  box-shadow:
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.20),   /* 顶部高光：光从上方打下来 */
+    inset 0 -1rpx 0 rgba(255, 255, 255, 0.05),
+    var(--shadow-lg);
+  transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* 兜底：不支持 backdrop-filter 的机型，底色调实，别糊成灰 */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass {
+    background: rgba(20, 12, 38, 0.88);
+  }
+}
+
+/* 渐变细描边 —— 只给主卡用 */
+.glass--ring::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  border-radius: inherit;
+  padding: 1rpx;
+  pointer-events: none;
+  background: linear-gradient(150deg,
+    rgba(255, 255, 255, 0.55) 0%,
+    rgba(255, 255, 255, 0.10) 32%,
+    rgba(255, 255, 255, 0.02) 55%,
+    rgba(255, 255, 255, 0.06) 78%,
+    rgba(255, 255, 255, 0.38) 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+}
+
+/* 按压反馈：只动 transform，别加 opacity（会让 iOS 的 backdrop-filter 闪） */
+.is-tap {
+  transform: scale(0.972);
+}

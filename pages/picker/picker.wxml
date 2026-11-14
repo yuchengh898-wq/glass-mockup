@@ -1,0 +1,56 @@
+<view class="page" style="{{themeStyle}}">
+  <view class="aurora-bg"></view>
+
+  <view class="body">
+
+    <!-- 搜索 -->
+    <view class="search glass">
+      <view class="mag"></view>
+      <input class="search-input" value="{{keyword}}" placeholder="搜索院校名称"
+             placeholder-class="ph" bindinput="onSearch" />
+    </view>
+
+    <!-- 当前院校 -->
+    <view class="label">当前院校</view>
+    <view class="current glass">
+      <view class="logo">
+        <image wx:if="{{school.emblem}}" class="logo-img" src="{{school.emblem}}" mode="aspectFit" />
+        <text wx:else class="logo-mark">{{school.mark}}</text>
+      </view>
+      <view class="meta">
+        <text class="name">{{school.name}}</text>
+        <text class="motto">{{school.motto}}</text>
+      </view>
+      <view class="check">
+        <view class="tick"></view>
+      </view>
+    </view>
+
+    <!-- 院校列表 -->
+    <view class="label">热门院校 <text class="label-sub">· 共 {{total}} 所</text></view>
+    <view class="panel glass">
+      <view
+        class="row {{item.key === school.key ? 'sel' : ''}}"
+        wx:for="{{list}}"
+        wx:key="key"
+        data-key="{{item.key}}"
+        bindtap="onChoose"
+        hover-class="row-tap"
+        hover-stay-time="60"
+      >
+        <view class="emblem" style="{{item.emblemStyle}}">
+          <image wx:if="{{item.emblem}}" class="emblem-img" src="{{item.emblem}}" mode="aspectFit" />
+          <text wx:else class="emblem-mark">{{item.mark}}</text>
+        </view>
+        <view class="row-meta">
+          <text class="row-name">{{item.name}}</text>
+          <text class="row-motto">{{item.motto}}</text>
+        </view>
+        <view class="arrow"></view>
+      </view>
+    </view>
+
+    <view class="foot">已收录 {{total}} 所院校</view>
+
+  </view>
+</view>

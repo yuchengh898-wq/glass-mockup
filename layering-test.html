@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased;}
+  html,body{background:#0A0A10;}
+  .stage{display:flex;gap:30px;padding:26px;align-items:flex-start;}
+
+  .item{display:flex;flex-direction:column;gap:12px;align-items:center;}
+  .cap{font:600 14px/1 -apple-system,"Microsoft YaHei",sans-serif;letter-spacing:.5px;}
+  .cap.bad{color:#F87171}
+  .cap.good{color:#4ADE80}
+
+  .phone{
+    position:relative;width:375px;height:760px;overflow:hidden;border-radius:30px;
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+    color:rgba(255,255,255,.96);
+  }
+
+  /* ===== 关键差异只有这一行的顺序 ===== */
+  .phone.broken{
+    background-color:#07020F;
+    /* ❌ 现在的写法：不透明的 bg-wash 在最上层，把极光盖死了 */
+    background-image: var(--bg-wash), var(--aurora);
+    background-size: 100% 100%;
+  }
+  .phone.fixed{
+    background-color:#07020F;
+    /* ✅ 正确：极光在上层，深色底在下层 */
+    background-image: var(--aurora), var(--bg-wash);
+    background-size: 100% 100%;
+  }
+
+  .noise{position:absolute;inset:0;opacity:.05;mix-blend-mode:overlay;pointer-events:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");}
+
+  .body{position:relative;z-index:1;padding:26px 16px 0;}
+
+  .glass{
+    position:relative;border-radius:22px;overflow:hidden;
+    background:linear-gradient(145deg,rgba(255,255,255,.15),rgba(255,255,255,.065) 52%,rgba(255,255,255,.035));
+    border:1px solid rgba(255,255,255,.16);
+    -webkit-backdrop-filter:blur(26px) saturate(185%);
+    backdrop-filter:blur(26px) saturate(185%);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.20),inset 0 -1px 0 rgba(255,255,255,.05),
+      0 18px 38px -18px rgba(4,2,12,.9);
+  }
+
+  .hero{height:150px;padding:16px 18px;margin-bottom:16px;}
+  .title{font-size:24px;font-weight:700;letter-spacing:2px;
+    background:linear-gradient(180deg,#fff,#E9D5FF);
+    -webkit-background-clip:text;background-clip:text;color:transparent;}
+  .sub{font-size:11px;color:rgba(255,255,255,.45);margin-top:6px;letter-spacing:1px;}
+
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .tile{height:84px;padding:10px 12px;display:flex;flex-direction:column;justify-content:space-between;}
+  .chip{width:28px;height:28px;border-radius:9px;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.25),inset 0 0 0 1px rgba(255,255,255,.07);}
+  .nm{font-size:12px;font-weight:600;letter-spacing:1.4px;}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="item">
+    <div class="cap bad">❌ 现在（bg-wash 在上层）</div>
+    <div class="phone broken">
+      <div class="noise"></div>
+      <div class="body">
+        <div class="glass hero">
+          <div class="title">每日一题</div>
+          <div class="sub">自由选科 · 随机出题</div>
+        </div>
+        <div class="grid">
+          <div class="glass tile"><div class="chip" style="background:rgba(155,102,245,.34)"></div><div class="nm">数学</div></div>
+          <div class="glass tile"><div class="chip" style="background:rgba(170,102,245,.31)"></div><div class="nm">物理</div></div>
+          <div class="glass tile"><div class="chip" style="background:rgba(190,102,245,.28)"></div><div class="nm">化学</div></div>
+          <div class="glass tile"><div class="chip" style="background:rgba(210,102,245,.25)"></div><div class="nm">生物</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="item">
+    <div class="cap good">✅ 改好后（极光在上层）</div>
+    <div class="phone fixed">
+      <div class="noise"></div>
+      <div class="body">
+        <div class="glass hero">
+          <div class="title">每日一题</div>
+          <div class="sub">自由选科 · 随机出题</div>
+        </div>
+        <div class="grid">
+          <div class="glass tile"><div class="chip" style="background:rgba(155,102,245,.34)"></div><div class="nm">数学</div></div>
+          <div class="glass tile"><div class="chip" style="background:rgba(170,102,245,.31)"></div><div class="nm">物理</div></div>
+          <div class="glass tile"><div class="chip" style="background:rgba(190,102,245,.28)"></div><div class="nm">化学</div></div>
+          <div class="glass tile"><div class="chip" style="background:rgba(210,102,245,.25)"></div><div class="nm">生物</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const root = document.querySelector('.stage');
+root.style.setProperty('--bg-wash',
+  'radial-gradient(120% 62% at 46% -6%, #3D177A 0%, #23113F 34%, #100A22 62%, #07020F 100%)');
+root.style.setProperty('--aurora', [
+  'radial-gradient(58% 38% at 8% -2%, rgba(155,102,245,0.50) 0%, rgba(155,102,245,0) 68%)',
+  'radial-gradient(54% 34% at 98% 8%, rgba(245,102,231,0.48) 0%, rgba(245,102,231,0) 68%)',
+  'radial-gradient(48% 30% at 0% 42%, rgba(139,102,245,0.42) 0%, rgba(139,102,245,0) 68%)',
+  'radial-gradient(54% 34% at 102% 56%, rgba(243,115,196,0.40) 0%, rgba(243,115,196,0) 68%)',
+  'radial-gradient(62% 38% at 10% 98%, rgba(102,120,245,0.46) 0%, rgba(102,120,245,0) 68%)',
+  'radial-gradient(56% 34% at 98% 94%, rgba(190,102,245,0.30) 0%, rgba(190,102,245,0) 68%)'
+].join(','));
+</script>
+</body>
+</html>

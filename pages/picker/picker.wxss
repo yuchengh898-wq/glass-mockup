@@ -1,0 +1,256 @@
+/* pages/picker/picker.wxss */
+
+.page {
+  position: relative;
+  min-height: 100vh;
+  padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
+}
+
+.body {
+  position: relative;
+  z-index: 1;
+  padding-top: 16rpx;
+}
+
+/* ---------------- 搜索 ---------------- */
+.search {
+  display: flex;
+  align-items: center;
+  margin: 0 32rpx;
+  height: 80rpx;
+  padding: 0 32rpx;
+  border-radius: 40rpx;
+}
+
+.mag {
+  flex: none;
+  width: 26rpx;
+  height: 26rpx;
+  border: 3rpx solid rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  position: relative;
+  margin-right: 18rpx;
+}
+
+.mag::after {
+  content: '';
+  position: absolute;
+  right: -8rpx;
+  bottom: -6rpx;
+  width: 12rpx;
+  height: 3rpx;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 2rpx;
+  transform: rotate(45deg);
+}
+
+.search-input {
+  flex: 1;
+  font-size: 25rpx;
+  color: var(--ink);
+  letter-spacing: 1.2rpx;
+}
+
+.ph {
+  color: var(--ink-4);
+}
+
+/* ---------------- 小标题 ---------------- */
+.label {
+  font-size: 21rpx;
+  letter-spacing: 3.2rpx;
+  color: var(--ink-3);
+  padding: 0 36rpx;
+  margin-top: 36rpx;
+}
+
+.label-sub {
+  color: var(--ink-4);
+}
+
+/* ---------------- 当前院校 ---------------- */
+.current {
+  display: flex;
+  align-items: center;
+  margin: 20rpx 32rpx 0;
+  height: 160rpx;
+  padding: 0 36rpx;
+  border-radius: var(--r-md);
+  /* 用品牌色描一圈，强调"这是生效中的主题" */
+  box-shadow:
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.20),
+    0 0 0 1rpx var(--ring),
+    0 28rpx 60rpx -28rpx rgba(4, 2, 12, 0.9);
+}
+
+.logo {
+  flex: none;
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  margin-right: 28rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 32% 26%,
+    var(--brand-soft) 0%, var(--brand) 46%, var(--brand-deep) 100%);
+  box-shadow:
+    inset 0 0 0 1rpx rgba(255, 255, 255, 0.30),
+    0 0 36rpx 4rpx var(--logo-glow);
+}
+
+.logo-img {
+  width: 76rpx;
+  height: 76rpx;
+}
+
+.logo-mark {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.45);
+}
+
+.meta {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.name {
+  font-size: 32rpx;
+  font-weight: 600;
+  letter-spacing: 2.8rpx;
+}
+
+.motto {
+  font-size: 20rpx;
+  letter-spacing: 2.4rpx;
+  color: var(--ink-3);
+  margin-top: 6rpx;
+}
+
+.check {
+  flex: none;
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #fff, var(--brand-soft));
+  box-shadow: 0 8rpx 24rpx -4rpx var(--cta-glow);
+}
+
+.tick {
+  width: 16rpx;
+  height: 9rpx;
+  border-left: 3rpx solid var(--cta-fg);
+  border-bottom: 3rpx solid var(--cta-fg);
+  transform: rotate(-45deg) translate(1rpx, -2rpx);
+  border-radius: 1rpx;
+}
+
+/* ---------------- 列表：一个玻璃面板装多行 ----------------
+   别做成每行一个 .glass —— 10 个 backdrop-filter 会让中低端安卓掉帧，
+   而且视觉上也不如"一整块玻璃"整体。 */
+.panel {
+  margin: 20rpx 32rpx 0;
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  height: 124rpx;
+  padding: 0 32rpx;
+  position: relative;
+}
+
+/* 行间分割线：用渐变让它两端淡出，比一条实线精致得多 */
+.row + .row::before {
+  content: '';
+  position: absolute;
+  left: 32rpx;
+  right: 0;
+  top: 0;
+  height: 1rpx;
+  background: linear-gradient(90deg,
+    rgba(255, 255, 255, 0.10) 0%,
+    rgba(255, 255, 255, 0.03) 70%,
+    transparent 100%);
+}
+
+/* 选中行：品牌色从左往右淡出 */
+.row.sel {
+  background: linear-gradient(90deg, var(--row-sel) 0%, transparent 72%);
+}
+
+.row-tap {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.emblem {
+  flex: none;
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  margin-right: 26rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* 具体颜色由 JS 按每所学校算，见 picker.js */
+}
+
+.emblem-img {
+  width: 56rpx;
+  height: 56rpx;
+}
+
+.emblem-mark {
+  font-size: 26rpx;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.45);
+}
+
+.row-meta {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.row-name {
+  font-size: 28rpx;
+  font-weight: 500;
+  letter-spacing: 2rpx;
+}
+
+.row-motto {
+  font-size: 19rpx;
+  color: var(--ink-4);
+  letter-spacing: 1.6rpx;
+  margin-top: 4rpx;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.arrow {
+  flex: none;
+  width: 14rpx;
+  height: 14rpx;
+  border-top: 3rpx solid rgba(255, 255, 255, 0.28);
+  border-right: 3rpx solid rgba(255, 255, 255, 0.28);
+  transform: rotate(45deg);
+}
+
+.foot {
+  text-align: center;
+  font-size: 22rpx;
+  color: var(--ink-4);
+  letter-spacing: 2.4rpx;
+  margin-top: 32rpx;
+}
