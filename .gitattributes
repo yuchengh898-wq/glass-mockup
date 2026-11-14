@@ -1,0 +1,36 @@
+# ============================================================
+#  .gitattributes —— 统一换行符与文件类型处理
+#  作用：避免 Windows/Linux/Mac 之间换行符混乱导致的
+#        "整文件都被改动" 这种假变更
+# ============================================================
+
+# 默认：由 git 自动判断
+* text=auto
+
+# 文本文件统一用 LF（小程序与 Web 项目通用）
+*.html   text eol=lf
+*.css    text eol=lf
+*.js     text eol=lf
+*.json   text eol=lf
+*.wxml   text eol=lf
+*.wxss   text eol=lf
+*.md     text eol=lf
+*.py     text eol=lf
+.gitignore       text eol=lf
+.gitattributes   text eol=lf
+
+# Windows 专用脚本保留 CRLF
+*.bat    text eol=crlf
+*.cmd    text eol=crlf
+
+# 二进制文件：不要做任何换行转换
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.gif    binary
+*.webp   binary
+*.ico    binary
+*.svg    text
+*.zip    binary
+*.apk    binary
+*.exe    binary
